@@ -8,8 +8,10 @@ app.use(express.json());
 app.use(cors());
 
 const categoryRoute = require('./modules/category/router');
+const userRoute = require('./modules/user/router');
 
 app.use('/category', categoryRoute);
+app.use('/user', userRoute);
 
 app.get('/', (request, response) => {
     response.send('API is running');
