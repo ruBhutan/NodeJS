@@ -9,7 +9,7 @@ app.use(cors());
 
 const categoryRoute = require('./modules/category/router');
 
-app.use(categoryRoute);
+app.use('/category',categoryRoute);
 
 app.get('/', (request, response)=>{
     response.send('API is running');
