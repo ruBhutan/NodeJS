@@ -1,7 +1,40 @@
 const schema = require('./schema');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+const loginUser = async (request, response) => {
+    const user = await schema.findOne({
+        email: request.body.email
+    });
+    
+    if(!user){
+        response.status(404).send({
+            message:'User does not exist',
+            status: 404
+        })
+    }
+
+    const isPasswordSame = await bcrypt.compare(request.body.password, user.password);
+
+    if(isPasswordSame){
+        const token = await jwt.sign({id: user._id}, 'EXPENSE_TRACKER',{
+            expiresIn: '30d'
+        });
+
+        response.send({
+            data: {
+                user: user,
+                token: token
+            },
+            message:'Signed in successfully',
+            status: 200
+        })
+    }
+}
 
 const getAll = async (request, response) => {
     // select * from table
+
     const data = await schema.find({});
 
     response.send({
@@ -30,9 +63,12 @@ const getById = async (request, response) => {
 }
 
 const create = async (request, response) => {
+    const password = request.body.password;
+    const hashedPassword = await bcrypt.hash(password, 10);
     // insert into table 
     const data = await schema.create({
-        ...request.body
+        ...request.body,
+        password: hashedPassword
     });
     response.send({
         // data: request.body,
@@ -42,9 +78,12 @@ const create = async (request, response) => {
 }
 
 const update = async (request, response) => {
+    const password = request.body.password;
+    const hashedPassword = await bcrypt.hash(password, 10);
     await schema.findByIdAndUpdate( request.params.id, {
         // title: request.body.title
-        ...request.body
+        ...request.body,
+        password: hashedPassword
     })
     response.send({
         // params: request.params.id,
@@ -68,5 +107,6 @@ module.exports = {
     getById,
     create,
     update,
-    remove
+    remove,
+    loginUser
 }

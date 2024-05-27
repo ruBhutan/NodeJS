@@ -15,7 +15,7 @@ const getAll = async (request, response) => {
 
 const getById = async (request, response) => {
   try{
-    const data = await schema.findById(request.params.id);
+    const data = await schema.findById(request.params.id).populate('createdBy','email _id');
     response.send({
         data: data,
         status: 200,
@@ -31,9 +31,11 @@ const getById = async (request, response) => {
 }
 
 const create = async (request, response) => {
+    const userId = request.user.id;
     // insert into table 
     const data = await schema.create({
-        title: request.body.title
+        title: request.body.title,
+        createdBy: userId
     });
     response.send({
         // data: request.body,

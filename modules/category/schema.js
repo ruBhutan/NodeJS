@@ -12,6 +12,11 @@ const CategorySchema = new Schema({
         type: 'String',
         required: false,
         default: 'https://cdn.pixabay.com/photo/2024/04/20/17/11/bee-8709123_1280.jpg'
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false
     }
 }, { timestamps: true });
 
